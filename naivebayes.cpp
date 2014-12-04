@@ -99,7 +99,7 @@ void test(string filename, vector<vector<vector<int> > > trainingData) {
 	yprob[1] = (double)ycount[1]/(double)vectorNum;
 
 	for (int i = 0; i < vectorNum; i++) {
-		cout << "Vector " << i << endl;
+		//cout << "Vector " << i << endl;
 		getline(testfile, line);
 		vector<int> testValues;
 		string buffer;
@@ -110,7 +110,7 @@ void test(string filename, vector<vector<vector<int> > > trainingData) {
 			testValues.push_back(value);	
 		}
 		int y = testValues[variableNum];
-		cout << "y class: " << y << endl;
+		//cout << "y class: " << y << endl;
 		classcount[y]++;
 		double prob[2] = {0.0, 0.0};
 		for (int j = 0; j < 2; j++) {
@@ -133,16 +133,16 @@ void test(string filename, vector<vector<vector<int> > > trainingData) {
 			//cout << "multiplied counts: " << probGivenY << endl;
 			//cout << "yprob: " << yprob[j] << endl;
 			//probGivenY *= yprob[j];
-			cout << "multiplied by prob: " << probGivenY << endl;
-			cout << "ycount: " << ycount[j] << endl;
-			cout << "variableNum: " << variableNum << endl;
+			//cout << "multiplied by prob: " << probGivenY << endl;
+			//cout << "ycount: " << ycount[j] << endl;
+			//cout << "variableNum: " << variableNum << endl;
 			double denom = pow(ycount[j], variableNum);
-			cout << "denom: " << denom << endl;
+			//cout << "denom: " << denom << endl;
 			probGivenY /= (double)denom;
 			prob[j] = probGivenY;
 		}
-		cout << "prob[0]: " << prob[0] << endl;
-		cout << "prob[1]: " << prob[1] << endl;
+		//cout << "prob[0]: " << prob[0] << endl;
+		//cout << "prob[1]: " << prob[1] << endl;
 		int yGuess = 0;
 		if (prob[1] > prob[0]) {
 			yGuess = 1;
@@ -162,6 +162,13 @@ int main() {
 
 	vector<vector<vector<int> > > simpleVector = train("simple-train.txt");
 	test("simple-test.txt", simpleVector);
+
+	vector<vector<vector<int> > > voteVector = train("vote-train.txt");
+	test("vote-test.txt", voteVector);
+
+	vector<vector<vector<int> > > heartVector = train("heart-train.txt");
+	test("heart-test.txt", heartVector);
+
 	//cout << crazyVector.size() << endl;
 
 	/*for (int i = 0; i < crazyVector.size(); i++) {
