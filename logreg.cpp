@@ -63,7 +63,66 @@ vector<double> train(string filename) {
 	return betas;
 }
 
+void test(string filename, vector<double> trainData) {	
+
+	int classcount[2] = {0, 0};
+	int correctcount[2] = {0, 0}; 
+
+	string line;
+	int variableNum;
+	int vectorNum;
+	ifstream testfile (filename);
+
+	getline(testfile,line);
+	variableNum = stoi(line);
+	getline(testfile,line);
+	vectorNum = stoi(line);
+
+	double z = 0.0;
+
+	for (int i = 1; i <= vectorNum; i++) {
+		vector<int> data;
+		data.push_back(1);
+		z += trainData[0];
+		getline(testfile,line);
+		string buffer;
+		stringstream ss(line);
+		for (int j = 1; j <= variableNum; j++) {
+			ss >> buffer; 
+			int value = stoi(buffer);
+			data.push_back(value);
+			z += trainData[j]*value;
+		}
+		ss >> buffer;
+		int y = stoi(buffer);
+		classcount[y]++;
+
+		double p = (1/(1 + pow(M_E, -z)));
+		int yGuess = 0;
+		if (p > 0.5) {
+			yGuess = 1;
+		}
+		if (yGuess == y) {
+			correctcount[y]++;
+		}
+	}
+	cout << filename << ":" << endl;
+	cout << "Class 0: tested " << classcount[0] << ", correctly classified " << correctcount[0] << endl;
+	cout << "Class 1: tested " << classcount[1] << ", correctly classified " << correctcount[1] << endl;
+	cout << "Overall: tested " << classcount[0] + classcount[1] << ", correctly classified " << correctcount[0] + correctcount[1] << endl;
+	cout << "Accuracy = " <<  (double)(correctcount[0] + correctcount[1])/(double)(classcount[0] + classcount[1]) << endl;
+}
+
 int main() {
+
+	vector<double> simpleVector = train("simple-train.txt");
+	test("simple-test.txt", simpleVector);
+
+	//vector<double> voteVector = train("vote-train.txt");
+	//test("vote-test.txt", voteVector);
+
+	//vector<double> heartVector = train("heart-train.txt");
+	//test("heart-test.txt", heartVector);
 
 	return 0;
 }
