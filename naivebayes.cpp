@@ -158,7 +158,67 @@ void test(string filename, vector<vector<vector<int> > > trainingData) {
 	cout << "Accuracy = " <<  (double)(correctcount[0] + correctcount[1])/(double)(classcount[0] + classcount[1]) << endl;
 }
 
+
+void appendRowsToFile(string fileName){
+	//Get number of variables from file
+	string line;
+	ifstream trainfile (fileName);
+	getline(trainfile,line);
+	int varNum = stoi(line);
+	trainfile.close();
+
+	//append four rows to file
+	ofstream file;
+	file.open(fileName, ios::app);
+	file << "\n";
+	for (int i = 0; i < varNum; i++) {
+		//last digit does not have a space afterwards
+		if (i == varNum -1) {
+			file << "0";
+		} else {
+			file << "0 ";
+		}
+	}
+	file << ": 0 \n";
+
+	for (int i = 0; i < varNum; i++) {
+		//last digit does not have a space afterwards
+		if (i == varNum -1) {
+			file << "0";
+		} else {
+			file << "0 ";
+		}
+	}
+	file << ": 1 \n";
+
+	for (int i = 0; i < varNum; i++) {
+		//last digit does not have a space afterwards
+		if (i == varNum -1) {
+			file << "1";
+		} else {
+			file << "1 ";
+		}
+	}
+	file << ": 0 \n";
+
+	for (int i = 0; i < varNum; i++) {
+		//last digit does not have a space afterwards
+		if (i == varNum -1) {
+			file << "1";
+		} else {
+			file << "1 ";
+		}
+	}
+	file << ": 1 \n";
+
+	file.close();
+}
+
+
 int main() {
+
+
+	cout << "Running the algorithm using Maximum Liklihood Estimators..." << endl;
 
 	vector<vector<vector<int> > > simpleVector = train("simple-train.txt");
 	test("simple-test.txt", simpleVector);
@@ -168,6 +228,36 @@ int main() {
 
 	vector<vector<vector<int> > > heartVector = train("heart-train.txt");
 	test("heart-test.txt", heartVector);
+
+
+	cout << "Running the algorithm using Laplace Estimators..." << endl;
+
+
+
+	appendRowsToFile("simple-train.txt");
+	appendRowsToFile("vote-train.txt");
+	appendRowsToFile("heart-train.txt");
+
+	vector<vector<vector<int> > > laplaceSimpleVector = train("simple-train.txt");
+	test("simple-test.txt", laplaceSimpleVector);
+
+	vector<vector<vector<int> > > laplaceVoteVector = train("vote-train.txt");
+	test("vote-test.txt", laplaceVoteVector);
+
+	vector<vector<vector<int> > > laplaceHeartVector = train("heart-train.txt");
+	test("heart-test.txt", laplaceHeartVector);
+
+	
+
+
+
+
+
+	
+
+
+
+	
 
 	//cout << crazyVector.size() << endl;
 
