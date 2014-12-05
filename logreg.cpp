@@ -41,7 +41,6 @@ vector<double> train(string filename) {
 			ss >> buffer; 
 			int value = stoi(buffer);
 			alldata[i].push_back(value);
-
 		}
 		ss >> buffer;
 		int y = stoi(buffer);
@@ -65,31 +64,29 @@ vector<double> train(string filename) {
 
 	for (int e = 0; e < EPOCHS; e++) {
 
-		vector<double> gradients(variableNum + 1);
-
 		//cache z's
 		vector<double> zVals;
 		for (int i = 0; i < vectorNum; i++) {
 			double z = 0.0;
 			zVals.push_back(z);
-			for (int j = 0; j < variableNum + 1; j++) {
+			for (int j = 0; j <= variableNum; j++) {
 				double toAdd = betas[j]*alldata[i][j];
 				zVals[i] += toAdd;
 			}
 		}
 		
-
+		vector<double> gradients(variableNum + 1);
 		for (int k = 0; k <= variableNum; k++) {
 			double gradient = 0.0;
 			gradients.push_back(gradient);
 			for (int i = 0; i < vectorNum; i++) {
-				gradients[k] += alldata[i][k]*(allYs[i] - (1/(1 + pow(M_E, -zVals[i]))));
-
+				double toAdd = alldata[i][k]*(allYs[i] - (1/(1 + pow(M_E, -zVals[i]))));
+				gradients[k] += toAdd;
 			}
 		}
 		
 		for (int k = 0; k <= variableNum; k++) {
-			betas[k] += LEARN_RATE*gradients[k];
+			betas[k] += (LEARN_RATE*gradients[k]);
 		}
 	}
 	return betas;
@@ -105,41 +102,59 @@ void test(string filename, vector<double> trainData) {
 	int variableNum;
 	int vectorNum;
 	ifstream testfile (filename);
-
+	
 	getline(testfile,line);
 	variableNum = stoi(line);
 	getline(testfile,line);
 	vectorNum = stoi(line);
+	//for (int i = 0; i < vectorNum; i++) {
+	//	cout << trainData[i] << endl;
+	//}
 
-	double z = 0.0;
-
-	for (int i = 1; i <= vectorNum; i++) {
-		vector<double> data;
-		data.push_back(1);
-		z += trainData[0];
+	//read in data
+	vector<double> ydata;
+	vector<vector<double> > testdata; 
+	for (int i = 0; i < vectorNum; i++) {
+		vector<double> onedata;
+		testdata.push_back(onedata);
+		testdata[i].push_back(1.0);		
 		getline(testfile,line);
 		string buffer;
 		stringstream ss(line);
-		for (int j = 1; j <= variableNum; j++) {
+		for (int k = 0; k < variableNum; k++) {
 			ss >> buffer; 
 			int value = stoi(buffer);
-			data.push_back(value);
-			z += trainData[j]*value;
+			testdata[i].push_back(value);
 		}
 		ss >> buffer;
 		int y = stoi(buffer);
 		classcount[y]++;
+		ydata.push_back(y);
+	}
 
-		double p = (1/(1 + pow(M_E, -z)));
+	vector<double> zVals;
+	for (int i = 0; i < vectorNum; i++) {
+		double z = 0.0;
+		zVals.push_back(z);
+		for (int j = 0; j <= variableNum; j++) {
+			double toAdd = trainData[j]*testdata[i][j];
+			zVals[i] += toAdd;
+		}
+	}
+
+	for (int i = 0; i < vectorNum; i++) {
+		double p = (1/(1 + pow(M_E, -zVals[i])));
 		cout << p << endl;
 		int yGuess = 0;
 		if (p > 0.5) {
 			yGuess = 1;
 		}
+		int y = ydata[i];
 		if (yGuess == y) {
 			correctcount[y]++;
 		}
 	}
+
 	cout << filename << ":" << endl;
 	cout << "Class 0: tested " << classcount[0] << ", correctly classified " << correctcount[0] << endl;
 	cout << "Class 1: tested " << classcount[1] << ", correctly classified " << correctcount[1] << endl;
@@ -152,8 +167,8 @@ int main() {
 	vector<double> simpleVector = train("simple-train.txt");
 	test("simple-test.txt", simpleVector);
 
-	//vector<double> voteVector = train("vote-train.txt");
-	//test("vote-test.txt", voteVector);
+	vector<double> voteVector = train("vote-train.txt");
+	test("vote-test.txt", voteVector);
 
 	vector<double> heartVector = train("heart-train.txt");
 	test("heart-test.txt", heartVector);
