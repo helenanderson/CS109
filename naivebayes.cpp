@@ -9,7 +9,7 @@
 using namespace std;
 
 //void readTrainingData(string filename) {
-vector<vector<vector<int> > > train(string filename){
+vector<vector<vector<int> > > train(string filename, bool laplace){
 
 	string line;
 	int variableNum;
@@ -21,6 +21,11 @@ vector<vector<vector<int> > > train(string filename){
 	//cout << variableNum << endl;
 	getline(trainfile,line);
 	vectorNum = stoi(line);
+
+	//if using laplace, add four vectors
+	if (laplace) {
+		vectorNum += 4;
+	}
 	//cout << vectorNum << endl;
 	
 	vector<vector<vector<int> > > trainingData;
@@ -214,50 +219,53 @@ void appendRowsToFile(string fileName){
 	file.close();
 }
 
+//creates a copy of the training file
+void copyFile(string fileName, string copyFileName) {
+	std::ifstream in(fileName); 
+    std::ofstream out(copyFileName); 
+    out << in.rdbuf(); 
+    in.close();
+    out.close();
+}
 
 int main() {
 
 
 	cout << "Running the algorithm using Maximum Liklihood Estimators..." << endl;
 
-	vector<vector<vector<int> > > simpleVector = train("simple-train.txt");
+	vector<vector<vector<int> > > simpleVector = train("simple-train.txt", false);
 	test("simple-test.txt", simpleVector);
 
-	vector<vector<vector<int> > > voteVector = train("vote-train.txt");
+	vector<vector<vector<int> > > voteVector = train("vote-train.txt", false);
 	test("vote-test.txt", voteVector);
 
-	vector<vector<vector<int> > > heartVector = train("heart-train.txt");
+	vector<vector<vector<int> > > heartVector = train("heart-train.txt", false);
 	test("heart-test.txt", heartVector);
+
 
 
 	cout << "Running the algorithm using Laplace Estimators..." << endl;
 
 
+    copyFile("simple-train.txt", "simple-train-copy.txt");
+    copyFile("vote-train.txt", "vote-train-copy.txt");
+    copyFile("heart-train.txt", "heart-train-copy.txt");
 
-	appendRowsToFile("simple-train.txt");
-	appendRowsToFile("vote-train.txt");
-	appendRowsToFile("heart-train.txt");
+	appendRowsToFile("simple-train-copy.txt");
+	appendRowsToFile("vote-train-copy.txt");
+	appendRowsToFile("heart-train-copy.txt");
 
-	vector<vector<vector<int> > > laplaceSimpleVector = train("simple-train.txt");
+	vector<vector<vector<int> > > laplaceSimpleVector = train("simple-train-copy.txt", true);
 	test("simple-test.txt", laplaceSimpleVector);
 
-	vector<vector<vector<int> > > laplaceVoteVector = train("vote-train.txt");
+	vector<vector<vector<int> > > laplaceVoteVector = train("vote-train-copy.txt", true);
 	test("vote-test.txt", laplaceVoteVector);
 
-	vector<vector<vector<int> > > laplaceHeartVector = train("heart-train.txt");
+	vector<vector<vector<int> > > laplaceHeartVector = train("heart-train-copy.txt", true);
 	test("heart-test.txt", laplaceHeartVector);
 
 	
 
-
-
-
-
-	
-
-
-
-	
 
 	//cout << crazyVector.size() << endl;
 
