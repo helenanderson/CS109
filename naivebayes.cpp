@@ -8,26 +8,23 @@
 
 using namespace std;
 
-//void readTrainingData(string filename) {
 vector<vector<vector<int> > > train(string filename, bool laplace){
 
+	//read training file
 	string line;
-	int variableNum;
-	int vectorNum;
 	ifstream trainfile (filename);
 
 	getline(trainfile,line);
-	variableNum = stoi(line);
-	//cout << variableNum << endl;
+	int variableNum = stoi(line);
 	getline(trainfile,line);
-	vectorNum = stoi(line);
+	int vectorNum = stoi(line);
 
-	//if using laplace, add four vectors
+	//if using laplace, add four to vector count
 	if (laplace) {
 		vectorNum += 4;
 	}
-	//cout << vectorNum << endl;
 	
+	//initialize all values in 3D vector
 	vector<vector<vector<int> > > trainingData;
 	vector<vector<int> > twodplaceholder;
 	vector<int> onedplaceholder;
@@ -43,7 +40,6 @@ vector<vector<vector<int> > > train(string filename, bool laplace){
 		}
 	}
 
-	//cout << trainingData[0][0][0] << endl;
 
 	for (int i = 0; i < vectorNum; i++) {
 		getline(trainfile,line);
@@ -55,19 +51,14 @@ vector<vector<vector<int> > > train(string filename, bool laplace){
 			reversedData.push(value);
 		}
 		
-		//vector<vector<int> > yTable = trainingData[variableNum];
 		int y = reversedData.top();
 		reversedData.pop();
-		//cout << yTable[0][0] << endl;
-		//yTable[0][y]++;
 		trainingData[variableNum][0][y]++;
 
-		//while (reversedData.size() > 0) {
 		for (int i = 1; i <= variableNum; i++) {
-			//vector<vector<int> > xTable = trainingData[variableNum - i];
 			int x = reversedData.top();
 			reversedData.pop();
-			//xTable[x][y]++;
+
 			trainingData[variableNum - i][x][y]++;
 		}	
 	}
@@ -90,21 +81,16 @@ void test(string filename, vector<vector<vector<int> > > trainingData) {
 
 	getline(testfile,line);
 	variableNum = stoi(line);
-	//cout << variableNum << endl;
 	getline(testfile,line);
 	vectorNum = stoi(line);
 
 	ycount[0] = trainingData[variableNum][0][0];
 	ycount[1] = trainingData[variableNum][0][1];
 
-	//cout << "ycounts" << endl;
-	//cout << ycount[0] << endl;
-	//cout << ycount[1] << endl;
 	yprob[0] = (double)ycount[0]/(double)vectorNum;
 	yprob[1] = (double)ycount[1]/(double)vectorNum;
 
 	for (int i = 0; i < vectorNum; i++) {
-		//cout << "Vector " << i << endl;
 		getline(testfile, line);
 		vector<int> testValues;
 		string buffer;
@@ -115,39 +101,19 @@ void test(string filename, vector<vector<vector<int> > > trainingData) {
 			testValues.push_back(value);	
 		}
 		int y = testValues[variableNum];
-		//cout << "y class: " << y << endl;
 		classcount[y]++;
 		double prob[2] = {0.0, 0.0};
 		for (int j = 0; j < 2; j++) {
-			//int givenY = j;
 			double probGivenY = 1.0;
-			//int YEqualsiCount = trainingData[variableNum][0][i];
-			//cout << "ycount: " << YEqualsiCount << endl;
-			//cout << YEqualsiCount << endl;
-			//double probYEqualsi = YEqualsiCount/((double)vectorNum); 
-			//cout << probYEqualsi << endl;
 			for (int k = 0; k < testValues.size () - 1; k++) {
-				//cout << "x at pos " << k << endl;
-				//cout << "test y: " << j << endl;
 				int value = testValues[k];
 				int XYIntersectCount = trainingData[k][value][j];
-				//cout << "count at (" << value << "," << j << "): " << XYIntersectCount << endl;
 				probGivenY *= XYIntersectCount;
 			}
-			//cout << probGivenY << endl;
-			//cout << "multiplied counts: " << probGivenY << endl;
-			//cout << "yprob: " << yprob[j] << endl;
-			//probGivenY *= yprob[j];
-			//cout << "multiplied by prob: " << probGivenY << endl;
-			//cout << "ycount: " << ycount[j] << endl;
-			//cout << "variableNum: " << variableNum << endl;
 			double denom = pow(ycount[j], variableNum);
-			//cout << "denom: " << denom << endl;
 			probGivenY /= (double)denom;
 			prob[j] = probGivenY;
 		}
-		//cout << "prob[0]: " << prob[0] << endl;
-		//cout << "prob[1]: " << prob[1] << endl;
 		int yGuess = 0;
 		if (prob[1] > prob[0]) {
 			yGuess = 1;
@@ -264,27 +230,6 @@ int main() {
 	vector<vector<vector<int> > > laplaceHeartVector = train("heart-train-copy.txt", true);
 	test("heart-test.txt", laplaceHeartVector);
 
-	
-
-
-	//cout << crazyVector.size() << endl;
-
-	/*for (int i = 0; i < crazyVector.size(); i++) {
-		vector<vector<int> > table = crazyVector[i]; 
-		vector<int> row = table[0];
-		for (int j = 0; j < table.size(); j++) {
-			for (int k = 0; k < row.size(); k++) {
-				cout << table[j][k] << " ";
-			}
-			cout << endl;
-		}
-		cout << "//" << endl;
-	}*/
-
-	//read in test file
-
-
-	
 	return 0;
 
 }
