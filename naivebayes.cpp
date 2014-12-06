@@ -196,7 +196,7 @@ void copyFile(string fileName, string copyFileName) {
 
 int main() {
 
-
+	cout << endl; 
 	cout << "Running the algorithm using Maximum Liklihood Estimators..." << endl;
 
 	vector<vector<vector<int> > > simpleVector = train("simple-train.txt", false);
@@ -207,6 +207,9 @@ int main() {
 
 	vector<vector<vector<int> > > heartVector = train("heart-train.txt", false);
 	test("heart-test.txt", heartVector);
+
+	cout << endl; 
+	cout << endl;
 
 
 
